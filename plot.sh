@@ -10,4 +10,3 @@ fi
 
 gnuplot -e "filename='$1'" graph.gnuplot
 xdg-open graph.png
-read -p "Press [Enter] key to start backup..."

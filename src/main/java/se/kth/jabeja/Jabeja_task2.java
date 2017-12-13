@@ -19,7 +19,6 @@ public class Jabeja_task2 {
   private int numberOfSwaps;
   private int round;
   private double T;
-  private double T_min;
   private boolean resultFileCreated = false;
 
   //-------------------------------------------------------------------
@@ -31,16 +30,21 @@ public class Jabeja_task2 {
     this.config = config;
     this.T = config.getTemperature();
     
-     //Initial temperature 
-     T = 1;
-     config.setDelta(0.9F);
+     //Initial temperature task2b 
+     //T = 1;
+     //config.setDelta(0.9F);
+     
+     //Initial temperature and delta BONUS
+      T = 0.1;
+     config.setDelta(1.05F);
   }
 
 
   //-------------------------------------------------------------------
   public void startJabeja() throws IOException {
     
-    for (round = 0; round < config.getRounds(); round++) {
+     for (round = 0; round < config.getRounds(); round++) {
+      
       for (int id : entireGraph.keySet()) {
         sampleAndSwap(id);
       }
@@ -50,6 +54,7 @@ public class Jabeja_task2 {
       saCoolDown();
       report();
     }
+  
   }
 
   /**
@@ -60,9 +65,9 @@ public class Jabeja_task2 {
       
    T *= config.getDelta();
     if (T < 0.00001)
-    {
+   {
       T  = 0.00001;
-    }
+   }
   }
 
   /**
@@ -108,13 +113,13 @@ public class Jabeja_task2 {
 
   public Node findPartner(int nodeId, Integer[] nodes){
      
-    
     Node nodep = entireGraph.get(nodeId);
 
     Node bestPartner = null;
     double highestBenefit = 0;
 
     // TODO
+    
     for(int nodeqID : nodes)
     {
         Node nodeq = entireGraph.get(nodeqID);
@@ -125,21 +130,23 @@ public class Jabeja_task2 {
         int degreeqp = getDegree(nodeq, nodep.getColor());
         
         double newE = Math.pow(degreepq, config.getAlpha()) + Math.pow(degreeqp, config.getAlpha());
-        double acceptanceProbability = acceptanceProb(oldE, newE);
         
+        //double acceptanceProbability =  Math.exp((newE - oldE)/T);
+
+   
+         //acceptance probability BONUS
+        double acceptanceProbability = acceptanceProbBonus(oldE, newE);
+       
         double random = Math.random();
         
-        if(acceptanceProbability > random)
+        //System.out.println("[AcceptanceProb] " + acceptanceProbability + " [random] " + random + "[newE-oldE] " + (newE-oldE));
+        //logger.info("[AcceptanceProb] " + acceptanceProbability + " [random] " + random + "[newE-oldE] " + (newE-oldE) + " [T] " + T);
+        if(acceptanceProbability > random && acceptanceProbability > highestBenefit) 
         {
            bestPartner = nodeq;
-           highestBenefit = newE;
+           highestBenefit = acceptanceProbability;
         }
-        
-         //if(acceptanceProbability > random && acceptanceProbability > highestBenefit)
-        //{
-          // bestPartner = nodeq;
-           //highestBenefit = acceptanceProbability;
-       // }
+       
     }
 
     return bestPartner;
@@ -300,12 +307,21 @@ public class Jabeja_task2 {
   }
 
   /**
-   * Calculates the acceptance probability based on the old and new solution
+   * Calculates the acceptance probability based on the old and new energy
    * @param oldE - old solution
    * @param newE - new solution
    */
-    private double acceptanceProb(double oldE, double newE) {
-       
-        return Math.exp((oldE - newE)/T);
+    private double acceptanceProbBonus(double oldE, double newE) {    
+        //Acceptance probability for the bonus question
+       if(newE>oldE)
+       {
+           return 1;
+       }
+       if(newE == oldE)
+       {
+          return 0;
+       }
+       return 0;
+       //return T*(newE - oldE)+1;
     }
 }

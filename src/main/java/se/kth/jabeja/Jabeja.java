@@ -35,6 +35,12 @@ public class Jabeja {
   //-------------------------------------------------------------------
   public void startJabeja() throws IOException {
     for (round = 0; round < config.getRounds(); round++) {
+        
+    //if (round%400 == 0)
+    //{
+      //T = config.getTemperature();   
+    //}
+           
       for (int id : entireGraph.keySet()) {
         sampleAndSwap(id);
       }
